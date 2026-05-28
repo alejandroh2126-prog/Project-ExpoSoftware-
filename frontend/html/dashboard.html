@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard – Guía Emprendedor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-inner">
+        <div class="nav-brand">
+            <span class="brand-dot"></span>
+            <span>Guía Emprendedor</span>
+            <span class="brand-tag">POO – UPC</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html" class="active">Dashboard</a></li>
+            <li><a href="finanzas.html">Finanzas</a></li>
+            <li><a href="index.html">Guía</a></li>
+            <li><button class="btn-nav-logout" id="btnLogout">Cerrar sesión</button></li>
+        </ul>
+    </div>
+</nav>
+
+<main class="main-content">
+    <div class="container">
+
+        <!-- Bienvenida -->
+        <div class="dashboard-header">
+            <div>
+                <h1>Hola, <span id="nombreUsuario">Emprendedor</span> 👋</h1>
+                <p>Gestiona tus emprendimientos desde un solo lugar.</p>
+            </div>
+            <button class="btn btn-primary" id="btnNuevoEmp">+ Nuevo emprendimiento</button>
+        </div>
+
+        <!-- Estadísticas rápidas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-icon">🚀</span>
+                <div>
+                    <p class="stat-label">Emprendimientos</p>
+                    <p class="stat-valor" id="statTotal">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">✅</span>
+                <div>
+                    <p class="stat-label">Activos</p>
+                    <p class="stat-valor" id="statActivos">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">📅</span>
+                <div>
+                    <p class="stat-label">Miembro desde</p>
+                    <p class="stat-valor" id="statFecha">–</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de emprendimientos -->
+        <div class="section-header" style="margin-top:48px">
+            <h2>Mis emprendimientos</h2>
+        </div>
+        <div class="emp-grid" id="empGrid">
+            <div class="empty-state">
+                <p>🌱 Aún no tienes emprendimientos.<br/>¡Crea el primero!</p>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- Modal nuevo/editar emprendimiento -->
+<div class="modal-overlay" id="modalEmp">
+    <div class="modal-box">
+        <button class="modal-close" id="cerrarModalEmp">✕</button>
+        <h2 id="modalEmpTitulo">Nuevo emprendimiento</h2>
+        <div class="form-group">
+            <label>Nombre del emprendimiento *</label>
+            <input type="text" id="empNombre" placeholder="Ej: Tienda de ropa artesanal"/>
+        </div>
+        <div class="form-group">
+            <label>Descripción</label>
+            <textarea id="empDesc" placeholder="¿De qué trata tu negocio?" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Sector</label>
+            <select id="empSector">
+                <option value="">Selecciona un sector</option>
+                <option value="comercio">Comercio</option>
+                <option value="servicios">Servicios</option>
+                <option value="tecnologia">Tecnología</option>
+                <option value="alimentos">Alimentos y bebidas</option>
+                <option value="moda">Moda y textiles</option>
+                <option value="salud">Salud y bienestar</option>
+                <option value="educacion">Educación</option>
+                <option value="otro">Otro</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Fecha de inicio</label>
+            <input type="date" id="empFecha"/>
+        </div>
+        <input type="hidden" id="empId"/>
+        <div id="errorEmp" class="alert alert-error" style="display:none"></div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" id="cancelarEmp">Cancelar</button>
+            <button class="btn btn-primary" id="guardarEmp">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Chatbot -->
+<div class="chatbot-btn" id="chatbotBtn">💬</div>
+<div class="chatbot-window" id="chatbotWindow" style="display:none">
+    <div class="chatbot-header">
+        <span>🤖 Asistente Emprendedor</span>
+        <button id="cerrarChat">✕</button>
+    </div>
+    <div class="chatbot-messages" id="chatMessages"></div>
+    <div class="chatbot-input">
+        <input type="text" id="chatInput" placeholder="Escribe tu pregunta..."/>
+        <button id="enviarChat">➤</button>
+    </div>
+</div>
+
+<script src="js/dashboard.js"></script>
+<script src="js/chatbot.js"></script>
+</body>
+</html>

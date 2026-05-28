@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Finanzas – Guía Emprendedor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-inner">
+        <div class="nav-brand">
+            <span class="brand-dot"></span>
+            <span>Guía Emprendedor</span>
+            <span class="brand-tag">POO – UPC</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="finanzas.html" class="active">Finanzas</a></li>
+            <li><a href="index.html">Guía</a></li>
+            <li><button class="btn-nav-logout" id="btnLogout">Cerrar sesión</button></li>
+        </ul>
+    </div>
+</nav>
+
+<main class="main-content">
+    <div class="container">
+
+        <div class="dashboard-header">
+            <div>
+                <h1>💰 Módulo Financiero</h1>
+                <p>Controla ingresos, gastos y presupuestos de tu emprendimiento.</p>
+            </div>
+            <select class="select-emp" id="selectorEmp">
+                <option value="">Selecciona un emprendimiento</option>
+            </select>
+        </div>
+
+        <!-- Resumen financiero -->
+        <div class="stats-grid" id="resumenFinanciero">
+            <div class="stat-card ingreso">
+                <span class="stat-icon">📈</span>
+                <div>
+                    <p class="stat-label">Total ingresos</p>
+                    <p class="stat-valor" id="totalIngresos">$0</p>
+                </div>
+            </div>
+            <div class="stat-card gasto">
+                <span class="stat-icon">📉</span>
+                <div>
+                    <p class="stat-label">Total gastos</p>
+                    <p class="stat-valor" id="totalGastos">$0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">⚖️</span>
+                <div>
+                    <p class="stat-label">Balance</p>
+                    <p class="stat-valor" id="balance">$0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="finanzas-grid">
+
+            <!-- Panel izquierdo: transacciones -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Transacciones</h3>
+                    <button class="btn btn-primary btn-sm" id="btnNuevaTrans">+ Nueva</button>
+                </div>
+
+                <!-- Formulario nueva transacción -->
+                <div class="form-inline" id="formTrans" style="display:none">
+                    <div class="form-group">
+                        <label>Tipo</label>
+                        <select id="transTipo">
+                            <option value="ingreso">Ingreso</option>
+                            <option value="gasto">Gasto</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select id="transCategoria">
+                            <option value="ventas">Ventas</option>
+                            <option value="servicios">Servicios</option>
+                            <option value="inversión">Inversión recibida</option>
+                            <option value="arriendo">Arriendo</option>
+                            <option value="nomina">Nómina</option>
+                            <option value="marketing">Marketing</option>
+                            <option value="insumos">Insumos</option>
+                            <option value="servicios_pub">Servicios públicos</option>
+                            <option value="transporte">Transporte</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <input type="text" id="transDesc" placeholder="Descripción opcional"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Monto ($)</label>
+                        <input type="number" id="transMonto" placeholder="0" min="0" step="0.01"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <input type="date" id="transFecha"/>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-outline btn-sm" id="cancelarTrans">Cancelar</button>
+                        <button class="btn btn-primary btn-sm" id="guardarTrans">Guardar</button>
+                    </div>
+                </div>
+
+                <div class="trans-lista" id="transLista">
+                    <p class="empty-msg">Selecciona un emprendimiento para ver sus transacciones.</p>
+                </div>
+            </div>
+
+            <!-- Panel derecho: presupuestos -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Presupuestos del mes</h3>
+                    <button class="btn btn-primary btn-sm" id="btnNuevoPresup">+ Nuevo</button>
+                </div>
+
+                <div class="form-inline" id="formPresup" style="display:none">
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select id="presupCategoria">
+                            <option value="arriendo">Arriendo</option>
+                            <option value="nomina">Nómina</option>
+                            <option value="marketing">Marketing</option>
+                            <option value="insumos">Insumos</option>
+                            <option value="servicios_pub">Servicios públicos</option>
+                            <option value="transporte">Transporte</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Límite ($)</label>
+                        <input type="number" id="presupMonto" placeholder="0" min="0"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Mes (YYYY-MM)</label>
+                        <input type="month" id="presupMes"/>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-outline btn-sm" id="cancelarPresup">Cancelar</button>
+                        <button class="btn btn-primary btn-sm" id="guardarPresup">Guardar</button>
+                    </div>
+                </div>
+
+                <div class="presup-lista" id="presupLista">
+                    <p class="empty-msg">Selecciona un emprendimiento para ver sus presupuestos.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<!-- Chatbot -->
+<div class="chatbot-btn" id="chatbotBtn">💬</div>
+<div class="chatbot-window" id="chatbotWindow" style="display:none">
+    <div class="chatbot-header">
+        <span>🤖 Asistente Emprendedor</span>
+        <button id="cerrarChat">✕</button>
+    </div>
+    <div class="chatbot-messages" id="chatMessages"></div>
+    <div class="chatbot-input">
+        <input type="text" id="chatInput" placeholder="Escribe tu pregunta..."/>
+        <button id="enviarChat">➤</button>
+    </div>
+</div>
+
+<script src="js/finanzas.js"></script>
+<script src="js/chatbot.js"></script>
+</body>
+</html>
