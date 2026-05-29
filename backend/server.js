@@ -5,6 +5,9 @@ const path    = require('path');
 const authRoutes            = require('./routes/auth');
 const emprendimientosRoutes = require('./routes/emprendimientos');
 const finanzasRoutes        = require('./routes/finanzas');
+const nominaRoutes          = require('./routes/nomina');
+
+
 
 const app  = express();
 const PORT = 3000;
@@ -19,6 +22,7 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 app.use('/api/auth',            authRoutes);
 app.use('/api/emprendimientos', emprendimientosRoutes);
 app.use('/api/finanzas',        finanzasRoutes);
+app.use('/api/nomina',           nominaRoutes);
 
 // Página de inicio → landing page
 app.get('/', (req, res) => {

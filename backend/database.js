@@ -44,6 +44,27 @@ db.exec(`
     mes TEXT NOT NULL,
     FOREIGN KEY (emprendimiento_id) REFERENCES emprendimientos(id)
   );
-`);
+  CREATE TABLE IF NOT EXISTS cargos (
+                                      id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                      emprendimiento_id INTEGER NOT NULL,
+                                      nombre TEXT NOT NULL,
+                                      salario_base REAL NOT NULL,
+                                      descripcion TEXT,
+                                      FOREIGN KEY (emprendimiento_id) REFERENCES emprendimientos(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS trabajadores (
+                                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                            emprendimiento_id INTEGER NOT NULL,
+                                            cargo_id INTEGER NOT NULL,
+                                            nombre TEXT NOT NULL,
+                                            apellido TEXT NOT NULL,
+                                            cedula TEXT,
+                                            fecha_ingreso TEXT,
+                                            estado TEXT DEFAULT 'activo',
+                                            fecha_creacion TEXT DEFAULT (datetime('now')),
+                                            FOREIGN KEY (emprendimiento_id) REFERENCES emprendimientos(id),
+                                            FOREIGN KEY (cargo_id) REFERENCES cargos(id)
+  );`);
 
 module.exports = db;
