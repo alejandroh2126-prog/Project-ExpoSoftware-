@@ -3,7 +3,6 @@ package sgape;
 import java.util.ArrayList;
 import java.util.List;
 
-// Clase Emprendimiento con colección de trabajadores
 public class Emprendimiento {
     private int    id;
     private String nombre;
@@ -28,7 +27,7 @@ public class Emprendimiento {
         this.cargos       = new ArrayList<>();
     }
 
-    // Getters
+    // ── Getters ──────────────────────────────
     public int    getId()          { return id; }
     public String getNombre()      { return nombre; }
     public String getDescripcion() { return descripcion; }
@@ -39,6 +38,14 @@ public class Emprendimiento {
     public List<Trabajador> getTrabajadores() { return trabajadores; }
     public List<Cargo>      getCargos()       { return cargos; }
 
+    // ── Setters ──────────────────────────────
+    public void setNombre(String nombre)           { this.nombre = nombre; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public void setSector(String sector)           { this.sector = sector; }
+    public void setFechaInicio(String fechaInicio) { this.fechaInicio = fechaInicio; }
+    public void setEstado(String estado)           { this.estado = estado; }
+
+    // ── Métodos ──────────────────────────────
     public void agregarTrabajador(Trabajador t) { trabajadores.add(t); }
     public void agregarCargo(Cargo c)           { cargos.add(c); }
 
@@ -56,8 +63,9 @@ public class Emprendimiento {
 
     @Override
     public String toString() {
-        return String.format("Emprendimiento: %-25s | Sector: %-15s | Trabajadores: %d | Nómina: $%,.0f",
-                nombre, sector, getTotalTrabajadores(), getNominaMensualTotal());
+        return String.format(
+                "%-25s | Sector: %-15s | Estado: %-8s | Trabajadores: %d | Nómina: $%,.0f",
+                nombre, sector, estado, getTotalTrabajadores(), getNominaMensualTotal());
     }
 
     public String toCSV() {
@@ -66,14 +74,16 @@ public class Emprendimiento {
     }
 
     public static Emprendimiento fromCSV(String linea) {
-        String[] p = linea.split(",");
+        String[] p = linea.split(",", -1);
         Emprendimiento e = new Emprendimiento(
-                Integer.parseInt(p[0]), p[1],
+                Integer.parseInt(p[0].trim()),
+                p.length > 1 ? p[1] : "",
                 p.length > 2 ? p[2] : "",
                 p.length > 3 ? p[3] : "",
                 p.length > 4 ? p[4] : "",
-                Integer.parseInt(p[6])
+                p.length > 6 ? Integer.parseInt(p[6].trim()) : 1
         );
+        if (p.length > 5 && !p[5].isEmpty()) e.setEstado(p[5]);
         return e;
     }
 }
