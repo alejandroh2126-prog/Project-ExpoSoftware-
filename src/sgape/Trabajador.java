@@ -1,6 +1,7 @@
 package sgape;
 
-// Herencia: Trabajador extiende Persona
+import java.util.List;
+
 public class Trabajador extends Persona {
     private int    id;
     private Cargo  cargo;
@@ -11,7 +12,7 @@ public class Trabajador extends Persona {
     public Trabajador(int id, String nombre, String apellido,
                       String cedula, Cargo cargo,
                       String fechaIngreso, int emprendimientoId) {
-        super(nombre, apellido, cedula); // Llamada al constructor padre
+        super(nombre, apellido, cedula);
         this.id               = id;
         this.cargo            = cargo;
         this.fechaIngreso     = fechaIngreso;
@@ -19,19 +20,23 @@ public class Trabajador extends Persona {
         this.emprendimientoId = emprendimientoId;
     }
 
-    // Getters
+    // ── Getters ──────────────────────────────
     public int    getId()               { return id; }
     public Cargo  getCargo()            { return cargo; }
     public String getFechaIngreso()     { return fechaIngreso; }
     public String getEstado()           { return estado; }
     public int    getEmprendimientoId() { return emprendimientoId; }
-    public void   setEstado(String e)   { this.estado = e; }
 
-    // Polimorfismo - implementa método abstracto de Persona
+    // ── Setters ──────────────────────────────
+    public void setEstado(String estado)          { this.estado = estado; }
+    public void setCargo(Cargo cargo)             { this.cargo = cargo; }
+    public void setFechaIngreso(String fecha)     { this.fechaIngreso = fecha; }
+
+    // ── Polimorfismo ─────────────────────────
     @Override
     public String getTipoPersona() { return "Trabajador"; }
 
-    // Delegación al cargo para cálculos
+    // ── Cálculos (delega al cargo) ────────────
     public double getSalarioMensual()   { return cargo.getSalarioMensual(); }
     public double getSalarioQuincenal() { return cargo.getSalarioQuincenal(); }
     public double getSalarioNeto()      { return cargo.getSalarioNeto(); }
@@ -39,31 +44,32 @@ public class Trabajador extends Persona {
 
     @Override
     public String toString() {
-        return String.format("%-25s | %-20s | Mensual: $%,.0f | Neto: $%,.0f | %s",
+        return String.format(
+                "%-25s | Cargo: %-20s | Mensual: $%,.0f | Neto: $%,.0f | %s",
                 getNombreCompleto(), cargo.getNombre(),
                 getSalarioMensual(), getSalarioNeto(), estado);
     }
 
-    // Para guardar en archivo
     public String toCSV() {
         return id + "," + getNombre() + "," + getApellido() + "," +
                 getCedula() + "," + cargo.getId() + "," +
                 fechaIngreso + "," + estado + "," + emprendimientoId;
     }
 
-    // Para leer de archivo (necesita lista de cargos)
-    public static Trabajador fromCSV(String linea, java.util.List<Cargo> cargos) {
-        String[] p = linea.split(",");
-        int cargoId = Integer.parseInt(p[4]);
+    public static Trabajador fromCSV(String linea, List<Cargo> cargos) {
+        String[] p = linea.split(",", -1);
+        int cargoId = Integer.parseInt(p[4].trim());
         Cargo cargo = cargos.stream()
                 .filter(c -> c.getId() == cargoId)
-                .findFirst()
-                .orElse(null);
+                .findFirst().orElse(null);
+        if (cargo == null) return null;
         Trabajador t = new Trabajador(
-                Integer.parseInt(p[0]), p[1], p[2], p[3],
-                cargo, p[5], Integer.parseInt(p[7])
+                Integer.parseInt(p[0].trim()),
+                p[1], p[2], p[3], cargo,
+                p.length > 5 ? p[5] : "",
+                p.length > 7 ? Integer.parseInt(p[7].trim()) : 1
         );
-        t.setEstado(p[6]);
+        if (p.length > 6) t.setEstado(p[6]);
         return t;
     }
 }
