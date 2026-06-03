@@ -20,12 +20,14 @@ function getSession() {
     catch { return null; }
 }
 
-function saveSession(usuario) {
+function saveSession(usuario, token) {
     localStorage.setItem(SESSION_KEY, JSON.stringify(usuario));
-    // Compatibilidad con el resto del sistema
-    localStorage.setItem('token', 'local_token_' + usuario.id);
+    if (token) {
+        localStorage.setItem('token', token);
+    }
     localStorage.setItem('usuario', JSON.stringify(usuario));
 }
+
 
 function mostrarError(id, msg) {
     const el = document.getElementById(id);
@@ -45,26 +47,31 @@ function mostrarExito(id, msg) {
 // ── LOGIN ────────────────────────────────────
 const btnLogin = document.getElementById('btnLogin');
 if (btnLogin) {
-    btnLogin.addEventListener('click', () => {
+    btnLogin.addEventListener('click', async () => {
         const email    = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
 
         if (!email || !password)
             return mostrarError('error-msg', 'Completa todos los campos');
 
-        const usuarios = getUsuarios();
-        const usuario  = usuarios.find(u => u.email === email);
-
-        if (!usuario)
-            return mostrarError('error-msg', 'Correo o contraseña incorrectos');
-
-        // Verificar contraseña (hash simple con btoa)
-        const hashIngresado = btoa(password + usuario.salt);
-        if (hashIngresado !== usuario.password)
-            return mostrarError('error-msg', 'Correo o contraseña incorrectos');
-
-        saveSession({ id: usuario.id, nombre: usuario.nombre, email: usuario.email });
-        window.location.href = 'dashboard.html';
+        try {
+            const res = await fetch('http://localhost:3000/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.error || 'Correo o contraseña incorrectos');
+            }
+            // Guardar datos sesión de respuesta backend (token y usuario)
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('usuario', JSON.stringify(data.usuario));
+            saveSession(data.usuario, data.token);
+            window.location.href = 'dashboard.html';
+        } catch (e) {
+            mostrarError('error-msg', e.message);
+        }
     });
 
     document.getElementById('password').addEventListener('keydown', e => {
@@ -75,7 +82,7 @@ if (btnLogin) {
 // ── REGISTRO ─────────────────────────────────
 const btnRegistro = document.getElementById('btnRegistro');
 if (btnRegistro) {
-    btnRegistro.addEventListener('click', () => {
+    btnRegistro.addEventListener('click', async () => {
         const nombre    = document.getElementById('nombre').value.trim();
         const email     = document.getElementById('email').value.trim();
         const password  = document.getElementById('password').value;
@@ -90,29 +97,27 @@ if (btnRegistro) {
         if (!email.includes('@'))
             return mostrarError('error-msg', 'Ingresa un correo válido');
 
-        const usuarios = getUsuarios();
-        if (usuarios.find(u => u.email === email))
-            return mostrarError('error-msg', 'Este correo ya está registrado');
-
-        // Hash simple (salt + btoa para no depender de bcrypt)
-        const salt     = Math.random().toString(36).substring(2);
-        const hashPass = btoa(password + salt);
-        const nuevoId  = Date.now();
-
-        const nuevoUsuario = {
-            id: nuevoId, nombre, email,
-            password: hashPass, salt,
-            fecha_registro: new Date().toLocaleDateString('es-CO')
-        };
-
-        usuarios.push(nuevoUsuario);
-        saveUsuarios(usuarios);
-        saveSession({ id: nuevoId, nombre, email });
-
-        mostrarExito('success-msg', '¡Cuenta creada exitosamente! Redirigiendo...');
-        setTimeout(() => window.location.href = 'dashboard.html', 1200);
+        try {
+            const res = await fetch('http://localhost:3000/api/auth/registro', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre, email, password })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.error || 'No fue posible registrar');
+            }
+            // Guardar datos de sesión/backend
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('usuario', JSON.stringify(data.usuario));
+            saveSession(data.usuario, data.token);
+            window.location.href = 'dashboard.html';
+        } catch (e) {
+            mostrarError('error-msg', e.message);
+        }
     });
 }
+
 
 // ── REDIRIGIR SI YA HAY SESIÓN ───────────────
 if (getSession() &&

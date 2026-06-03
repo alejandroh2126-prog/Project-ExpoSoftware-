@@ -145,18 +145,41 @@ document.getElementById('cancelarCargo').addEventListener('click', () => {
     document.getElementById('cargoSalario').value = '';
     document.getElementById('cargoDesc').value = '';
 });
-document.getElementById('guardarCargo').addEventListener('click', () => {
+document.getElementById('guardarCargo').addEventListener('click', async () => {
     const empId  = document.getElementById('selectorEmp').value;
     const nombre = document.getElementById('cargoNombre').value.trim();
     const salario = parseFloat(document.getElementById('cargoSalario').value);
     if (!empId)  return alert('Selecciona un emprendimiento primero');
     if (!nombre) return alert('El nombre del cargo es obligatorio');
     if (!salario || salario <= 0) return alert('El salario debe ser mayor a 0');
-    const lista = getCargos(empId);
-    lista.push({ id: Date.now().toString(), nombre, salarioBase: salario, descripcion: document.getElementById('cargoDesc').value });
-    saveCargos(empId, lista);
-    document.getElementById('cancelarCargo').click();
-    cargarDatos(empId);
+
+    const token = localStorage.getItem('token');
+    if (!token) return alert('Debes estar logueado');
+
+    const body = {
+        emprendimiento_id: empId,
+        nombre,
+        salario_base: salario,
+        descripcion: document.getElementById('cargoDesc').value
+    };
+
+    try {
+        const res = await fetch('http://localhost:3000/api/nomina/cargos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error al guardar');
+        // Si quieres mantener la lógica local offline:
+        const lista = getCargos(empId);
+        lista.push({ ...body, id: data.id || Date.now().toString(), salarioBase: salario });
+        saveCargos(empId, lista);
+        document.getElementById('cancelarCargo').click();
+        cargarDatos(empId);
+    } catch (e) {
+        alert(e.message);
+    }
 });
 
 function cargarTrabajadores(empId) {
@@ -230,25 +253,43 @@ document.getElementById('cancelarTrab').addEventListener('click', () => {
     document.getElementById('trabCedula').value = '';
     document.getElementById('trabCargo').value = '';
 });
-document.getElementById('guardarTrab').addEventListener('click', () => {
+document.getElementById('guardarTrab').addEventListener('click', async () => {
     const empId   = document.getElementById('selectorEmp').value;
     const nombre  = document.getElementById('trabNombre').value.trim();
     const apellido= document.getElementById('trabApellido').value.trim();
     const cargoId = document.getElementById('trabCargo').value;
     if (!nombre || !apellido) return alert('Nombre y apellido son obligatorios');
     if (!cargoId) return alert('Selecciona un cargo');
-    const lista = getTrabajadores(empId);
-    lista.push({
-        id:           Date.now().toString(),
-        nombre, apellido,
-        cedula:       document.getElementById('trabCedula').value,
-        cargoId,
-        fechaIngreso: document.getElementById('trabFecha').value,
-        estado:       'activo'
-    });
-    saveTrabajadores(empId, lista);
-    document.getElementById('cancelarTrab').click();
-    cargarDatos(empId);
+
+    const token = localStorage.getItem('token');
+    if (!token) return alert('Debes estar logueado');
+
+    const body = {
+        emprendimiento_id: empId,
+        cargo_id: cargoId,
+        nombre,
+        apellido,
+        cedula: document.getElementById('trabCedula').value,
+        fecha_ingreso: document.getElementById('trabFecha').value
+    };
+
+    try {
+        const res = await fetch('http://localhost:3000/api/nomina/trabajadores', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error al guardar');
+        // Guarda local también si quieres
+        const lista = getTrabajadores(empId);
+        lista.push({ ...body, id: data.id || Date.now().toString(), estado: 'activo' });
+        saveTrabajadores(empId, lista);
+        document.getElementById('cancelarTrab').click();
+        cargarDatos(empId);
+    } catch (e) {
+        alert(e.message);
+    }
 });
 
 cargarSelector();

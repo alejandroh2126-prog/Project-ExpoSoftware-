@@ -79,6 +79,12 @@ document.getElementById('guardarEmp').addEventListener('click', async () => {
         document.getElementById('errorEmp').style.display = 'block';
         return;
     }
+    const token = localStorage.getItem('token');
+    if (!token) {
+        document.getElementById('errorEmp').textContent = 'No hay sesión activa';
+        document.getElementById('errorEmp').style.display = 'block';
+        return;
+    }
     const body = {
         nombre,
         descripcion:  document.getElementById('empDesc').value,
@@ -88,8 +94,18 @@ document.getElementById('guardarEmp').addEventListener('click', async () => {
     const url    = id ? `${API}/emprendimientos/${id}` : `${API}/emprendimientos`;
     const method = id ? 'PUT' : 'POST';
     try {
-        const res = await fetch(url, { method, headers, body: JSON.stringify(body) });
-        if (!res.ok) throw new Error('Error al guardar');
+        // DEBUG: imprime los datos relevantes
+        console.log('DEBUG JWT token:', token);
+        console.log('DEBUG headers:', { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
+        console.log('DEBUG fetch url:', url);
+        console.log('DEBUG fetch body:', body);
+        const res = await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error al guardar');
         document.getElementById('modalEmp').classList.remove('active');
         cargarEmprendimientos();
     } catch (e) {

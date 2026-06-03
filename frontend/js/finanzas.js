@@ -110,25 +110,45 @@ document.getElementById('btnNuevaTrans').addEventListener('click', () => {
 document.getElementById('cancelarTrans').addEventListener('click', () => {
     document.getElementById('formTrans').style.display = 'none';
 });
-document.getElementById('guardarTrans').addEventListener('click', () => {
+document.getElementById('guardarTrans').addEventListener('click', async () => {
     const empId = document.getElementById('selectorEmp').value;
     if (!empId) return alert('Selecciona un emprendimiento');
     const monto = parseFloat(document.getElementById('transMonto').value);
     if (!monto || monto <= 0) return alert('Ingresa un monto válido');
-    const lista = getTrans(empId);
-    lista.push({
-        id:          Date.now().toString(),
+
+    const token = localStorage.getItem('token');
+    if (!token) return alert('Debes estar logueado');
+
+    const body = {
+        emprendimiento_id: empId,
         tipo:        document.getElementById('transTipo').value,
         categoria:   document.getElementById('transCategoria').value,
         descripcion: document.getElementById('transDesc').value,
         monto,
         fecha:       document.getElementById('transFecha').value,
-    });
-    saveTrans(empId, lista);
-    document.getElementById('formTrans').style.display = 'none';
-    document.getElementById('transMonto').value = '';
-    document.getElementById('transDesc').value  = '';
-    cargarDatos(empId);
+    };
+
+    try {
+        const res = await fetch('http://localhost:3000/api/finanzas/transacciones', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error al guardar');
+
+        // Si quieres seguir guardando localmente para offline:
+        const lista = getTrans(empId);
+        lista.push({ ...body, id: data.id || Date.now().toString() });
+        saveTrans(empId, lista);
+
+        document.getElementById('formTrans').style.display = 'none';
+        document.getElementById('transMonto').value = '';
+        document.getElementById('transDesc').value  = '';
+        cargarDatos(empId);
+    } catch (e) {
+        alert(e.message);
+    }
 });
 
 function cargarPresupuestos(empId) {
@@ -159,22 +179,40 @@ document.getElementById('btnNuevoPresup').addEventListener('click', () => {
 document.getElementById('cancelarPresup').addEventListener('click', () => {
     document.getElementById('formPresup').style.display = 'none';
 });
-document.getElementById('guardarPresup').addEventListener('click', () => {
+document.getElementById('guardarPresup').addEventListener('click', async () => {
     const empId = document.getElementById('selectorEmp').value;
     if (!empId) return alert('Selecciona un emprendimiento');
     const monto = parseFloat(document.getElementById('presupMonto').value);
     if (!monto || monto <= 0) return alert('Ingresa un monto válido');
-    const lista = getPresup(empId);
-    lista.push({
-        id:          Date.now().toString(),
+
+    const token = localStorage.getItem('token');
+    if (!token) return alert('Debes estar logueado');
+
+    const body = {
+        emprendimiento_id: empId,
         categoria:   document.getElementById('presupCategoria').value,
         monto_limite: monto,
         mes:         document.getElementById('presupMes').value,
-    });
-    savePresup(empId, lista);
-    document.getElementById('formPresup').style.display = 'none';
-    document.getElementById('presupMonto').value = '';
-    cargarDatos(empId);
+    };
+
+    try {
+        const res = await fetch('http://localhost:3000/api/finanzas/presupuestos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error al guardar');
+        // Guarda también local si quieres mantener datos offline:
+        const lista = getPresup(empId);
+        lista.push({ ...body, id: data.id || Date.now().toString() });
+        savePresup(empId, lista);
+        document.getElementById('formPresup').style.display = 'none';
+        document.getElementById('presupMonto').value = '';
+        cargarDatos(empId);
+    } catch (e) {
+        alert(e.message);
+    }
 });
 
 cargarSelector();
