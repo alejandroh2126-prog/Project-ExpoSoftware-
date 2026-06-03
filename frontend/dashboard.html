@@ -3,10 +3,29 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Dashboard – Guía Emprendedor</title>
+    <title>Dashboard – SGAPE</title>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="css/styles.css"/>
+    <style>
+        .modal-box-wide { max-width: 750px; }
+        .tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--borde); margin-bottom: 24px; }
+        .tab-btn { padding: 9px 18px; border: none; background: none; font-family: var(--font-body); font-size: 14px; font-weight: 600; color: var(--texto-suave); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+        .tab-btn.active { color: var(--verde); border-bottom-color: var(--verde); }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        .trab-card { background: #fafaf8; border: 1.5px solid var(--borde); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+        .trab-info strong { font-size: 15px; color: var(--negro); }
+        .trab-badge { display: inline-block; font-size: 11px; font-weight: 700; background: var(--verde-light); color: var(--verde-dark); padding: 2px 8px; border-radius: 999px; margin-left: 6px; }
+        .trab-meta { font-size: 12px; color: var(--texto-suave); margin-top: 4px; }
+        .trab-salarios { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+        .sal-chip { font-size: 12px; border-radius: 8px; padding: 5px 10px; font-weight: 600; }
+        .sal-chip.mensual   { background: #E1F5EE; color: #085041; }
+        .sal-chip.quincenal { background: #E8F0FD; color: #1a4aa8; }
+        .sal-chip.neto      { background: #FAEEDA; color: #BA7517; }
+        .salary-preview { background: #E1F5EE; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #085041; line-height: 1.9; margin-bottom: 14px; display: none; }
+        .empty-state-sm { text-align: center; padding: 24px; color: var(--texto-suave); font-size: 14px; }
+    </style>
 </head>
 <body>
 
@@ -14,14 +33,14 @@
     <div class="nav-inner">
         <div class="nav-brand">
             <span class="brand-dot"></span>
-            <span>Guía Emprendedor</span>
+            <span>SGAPE</span>
             <span class="brand-tag">POO – UPC</span>
         </div>
         <ul class="nav-links">
             <li><a href="dashboard.html" class="active">Dashboard</a></li>
             <li><a href="finanzas.html">Finanzas</a></li>
             <li><a href="nomina.html">Nómina</a></li>
-            <li><a href="../index.html">Guía</a></li>
+            <li><a href="guia.html">Guía</a></li>
             <li><button class="btn-nav-logout" id="btnLogout">Cerrar sesión</button></li>
         </ul>
     </div>
@@ -30,7 +49,6 @@
 <main class="main-content">
     <div class="container">
 
-        <!-- Bienvenida -->
         <div class="dashboard-header">
             <div>
                 <h1>Hola, <span id="nombreUsuario">Emprendedor</span> 👋</h1>
@@ -39,7 +57,6 @@
             <button class="btn btn-primary" id="btnNuevoEmp">+ Nuevo emprendimiento</button>
         </div>
 
-        <!-- Estadísticas rápidas -->
         <div class="stats-grid">
             <div class="stat-card">
                 <span class="stat-icon">🚀</span>
@@ -64,7 +81,6 @@
             </div>
         </div>
 
-        <!-- Lista de emprendimientos -->
         <div class="section-header" style="margin-top:48px">
             <h2>Mis emprendimientos</h2>
         </div>
@@ -77,7 +93,7 @@
     </div>
 </main>
 
-<!-- Modal nuevo/editar emprendimiento -->
+<!-- Modal: Nuevo / Editar emprendimiento -->
 <div class="modal-overlay" id="modalEmp">
     <div class="modal-box">
         <button class="modal-close" id="cerrarModalEmp">✕</button>
@@ -114,6 +130,95 @@
             <button class="btn btn-outline" id="cancelarEmp">Cancelar</button>
             <button class="btn btn-primary" id="guardarEmp">Guardar</button>
         </div>
+    </div>
+</div>
+
+<!-- Modal: Trabajadores del emprendimiento -->
+<div class="modal-overlay" id="modalTrab">
+    <div class="modal-box modal-box-wide">
+        <button class="modal-close" id="cerrarModalTrab">✕</button>
+        <h2 id="modalTrabTitulo">👥 Trabajadores</h2>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('lista')">📋 Lista</button>
+            <button class="tab-btn" onclick="switchTab('cargos')">⚙️ Cargos</button>
+            <button class="tab-btn" onclick="switchTab('nuevo')">➕ Agregar trabajador</button>
+        </div>
+
+        <!-- Pestaña: Lista -->
+        <div class="tab-panel active" id="tab-lista">
+            <div id="trabListModal">
+                <div class="empty-state-sm">Cargando trabajadores...</div>
+            </div>
+        </div>
+
+        <!-- Pestaña: Cargos -->
+        <div class="tab-panel" id="tab-cargos">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px">
+                <p style="font-size:13px;color:var(--texto-suave)">Define los roles y salarios del emprendimiento.</p>
+                <button class="btn btn-primary btn-sm" id="btnNuevoCargo">+ Nuevo cargo</button>
+            </div>
+            <div id="formCargo" style="display:none; background:var(--gris-claro); border-radius:12px; padding:16px; margin-bottom:16px;">
+                <div class="form-group">
+                    <label>Nombre del cargo *</label>
+                    <input type="text" id="cargoNombre" placeholder="Ej: Vendedor, Gerente, Técnico"/>
+                </div>
+                <div class="form-group">
+                    <label>Salario base mensual ($) *</label>
+                    <input type="number" id="cargoSalario" placeholder="0" min="0" step="1000"/>
+                </div>
+                <div class="form-group">
+                    <label>Descripción (opcional)</label>
+                    <input type="text" id="cargoDesc" placeholder="Descripción del cargo"/>
+                </div>
+                <div class="salary-preview" id="cargoPreview"></div>
+                <div class="modal-actions" style="margin-top:0">
+                    <button class="btn btn-outline btn-sm" id="cancelarCargo">Cancelar</button>
+                    <button class="btn btn-primary btn-sm" id="guardarCargo">Guardar cargo</button>
+                </div>
+            </div>
+            <div id="cargosListModal">
+                <div class="empty-state-sm">Sin cargos. Crea el primero.</div>
+            </div>
+        </div>
+
+        <!-- Pestaña: Agregar trabajador -->
+        <div class="tab-panel" id="tab-nuevo">
+            <div id="errorTrab" class="alert alert-error" style="display:none"></div>
+            <div id="successTrab" class="alert alert-success" style="display:none"></div>
+            <div class="form-group">
+                <label>Nombre *</label>
+                <input type="text" id="trabNombre" placeholder="Nombre del trabajador"/>
+            </div>
+            <div class="form-group">
+                <label>Apellido *</label>
+                <input type="text" id="trabApellido" placeholder="Apellido del trabajador"/>
+            </div>
+            <div class="form-group">
+                <label>Edad *</label>
+                <input type="number" id="trabEdad" placeholder="Ej: 25" min="14" max="99"/>
+            </div>
+            <div class="form-group">
+                <label>Cédula</label>
+                <input type="text" id="trabCedula" placeholder="Número de cédula"/>
+            </div>
+            <div class="form-group">
+                <label>Cargo *</label>
+                <select id="trabCargo">
+                    <option value="">— Selecciona un cargo —</option>
+                </select>
+            </div>
+            <div class="salary-preview" id="trabSalaryPreview"></div>
+            <div class="form-group">
+                <label>Fecha de ingreso</label>
+                <input type="date" id="trabFecha"/>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="switchTab('lista')">Cancelar</button>
+                <button class="btn btn-primary" id="guardarTrab">Guardar trabajador</button>
+            </div>
+        </div>
+
     </div>
 </div>
 
