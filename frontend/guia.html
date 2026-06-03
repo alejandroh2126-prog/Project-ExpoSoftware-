@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Guía del Sistema – SGAPE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/styles.css"/>
+    <style>
+        .guia-hero {
+            background: linear-gradient(135deg, var(--verde) 0%, var(--verde-dark) 100%);
+            border-radius: var(--radio-lg);
+            padding: 48px 40px;
+            color: #fff;
+            margin-bottom: 36px;
+            text-align: center;
+        }
+        .guia-hero h1 { font-family: var(--font-display); font-size: 36px; margin-bottom: 12px; color: #fff; }
+        .guia-hero p  { font-size: 16px; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+
+        .guia-nav {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 36px;
+        }
+        .guia-nav-btn {
+            padding: 9px 18px;
+            border-radius: 999px;
+            border: 1.5px solid var(--borde);
+            background: var(--blanco);
+            font-size: 13px;
+            font-weight: 600;
+            font-family: var(--font-body);
+            color: var(--texto);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .guia-nav-btn:hover, .guia-nav-btn.active {
+            background: var(--verde);
+            color: #fff;
+            border-color: var(--verde);
+        }
+
+        .guia-section { display: none; }
+        .guia-section.active { display: block; }
+
+        .guia-card {
+            background: var(--blanco);
+            border: 1.5px solid var(--borde);
+            border-radius: var(--radio-lg);
+            padding: 28px 32px;
+            margin-bottom: 20px;
+            box-shadow: var(--sombra);
+        }
+        .guia-card-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+        .guia-card-icon {
+            font-size: 36px;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--verde-light);
+            border-radius: 14px;
+        }
+        .guia-card h2 {
+            font-family: var(--font-display);
+            font-size: 22px;
+            color: var(--negro);
+            margin: 0 0 4px;
+        }
+        .guia-card .guia-tag {
+            font-size: 11px;
+            font-weight: 700;
+            background: var(--verde-light);
+            color: var(--verde-dark);
+            padding: 2px 10px;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .guia-card p { font-size: 14px; color: var(--texto-suave); line-height: 1.7; margin-bottom: 14px; }
+        .guia-card p:last-child { margin-bottom: 0; }
+
+        .guia-steps {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            counter-reset: paso;
+        }
+        .guia-steps li {
+            counter-increment: paso;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            margin-bottom: 14px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .guia-steps li::before {
+            content: counter(paso);
+            min-width: 26px;
+            height: 26px;
+            background: var(--verde);
+            color: #fff;
+            font-weight: 700;
+            font-size: 12px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2px;
+        }
+
+        .guia-tip {
+            background: #FFF8E7;
+            border-left: 4px solid #F5A623;
+            border-radius: 0 10px 10px 0;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #7A5000;
+            margin-top: 16px;
+        }
+
+        .formula-box {
+            background: #f0faf6;
+            border: 1.5px solid #9FE1CB;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-size: 13px;
+            color: var(--verde-dark);
+            margin: 12px 0;
+            font-family: monospace;
+            line-height: 2;
+        }
+        .formula-box strong { color: var(--verde-dark); }
+
+        .guia-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .guia-mini-card {
+            background: var(--gris-claro);
+            border-radius: 12px;
+            padding: 18px 20px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .guia-mini-card strong { font-size: 14px; display: block; margin-bottom: 4px; color: var(--negro); }
+
+        .faq-item {
+            border-bottom: 1.5px solid var(--borde);
+            padding: 16px 0;
+        }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-q {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--negro);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-a {
+            font-size: 13px;
+            color: var(--texto-suave);
+            line-height: 1.7;
+            margin-top: 10px;
+            display: none;
+        }
+        .faq-a.open { display: block; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-inner">
+        <div class="nav-brand">
+            <span class="brand-dot"></span>
+            <span>SGAPE</span>
+            <span class="brand-tag">POO · UPC</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="finanzas.html">Finanzas</a></li>
+            <li><a href="nomina.html">Nómina</a></li>
+            <li><a href="guia.html" class="active">Guía</a></li>
+            <li><button class="btn-nav-logout" id="btnLogout">Cerrar sesión</button></li>
+        </ul>
+    </div>
+</nav>
+
+<main class="main-content">
+    <div class="container">
+
+        <div class="guia-hero">
+            <h1>📖 Guía del Sistema SGAPE</h1>
+            <p>Aprende a usar todas las herramientas del Sistema de Gestión, Administración y Promoción de Emprendimientos.</p>
+        </div>
+
+        <!-- Navegación de secciones -->
+        <div class="guia-nav">
+            <button class="guia-nav-btn active" onclick="mostrarSeccion('inicio')">🏠 Inicio</button>
+            <button class="guia-nav-btn" onclick="mostrarSeccion('dashboard')">📊 Dashboard</button>
+            <button class="guia-nav-btn" onclick="mostrarSeccion('emprendimientos')">🚀 Emprendimientos</button>
+            <button class="guia-nav-btn" onclick="mostrarSeccion('trabajadores')">👥 Trabajadores</button>
+            <button class="guia-nav-btn" onclick="mostrarSeccion('finanzas')">💰 Finanzas</button>
+            <button class="guia-nav-btn" onclick="mostrarSeccion('nomina')">📋 Nómina</button>
+            <button class="guia-nav-btn" onclick="mostrarSeccion('faq')">❓ Preguntas</button>
+        </div>
+
+        <!-- ══════════════════ INICIO ══════════════════ -->
+        <div class="guia-section active" id="sec-inicio">
+
+            <div class="guia-card">
+                <div class="guia-card-header">
+                    <div class="guia-card-icon">🎯</div>
+                    <div>
+                        <h2>¿Qué es SGAPE?</h2>
+                        <span class="guia-tag">Bienvenida</span>
+                    </div>
+                </div>
+                <p>SGAPE es un <strong>Sistema de Gestión, Administración y Promoción de Emprendimientos</strong> diseñado para que emprendedores puedan organizar, controlar y hacer crecer sus negocios desde un solo lugar.</p>
+                <p>El sistema está dividido en cuatro módulos principales que trabajan juntos para darte una visión completa de tu negocio: <strong>Emprendimientos, Trabajadores, Finanzas y Nómina</strong>.</p>
+            </div>
+
+            <div class="guia-grid">
+                <div class="guia-mini-card">
+                    <strong>📊 Dashboard</strong>
+                    Tu centro de control. Ve todos tus emprendimientos, estadísticas rápidas y accede a cada módulo.
+                </div>
+                <div class="guia-mini-card">
+                    <strong>🚀 Emprendimientos</strong>
+                    Registra y administra tus negocios. Cada emprendimiento es independiente con sus propios trabajadores y finanzas.
+                </div>
+                <div class="guia-mini-card">
+                    <strong>👥 Trabajadores</strong>
+                    Dentro de cada emprendimiento puedes registrar tus empleados, asignarles cargos y ver el cálculo de su salario.
+                </div>
+                <div class="guia-mini-card">
+                    <strong>💰 Finanzas</strong>
+                    Registra ingresos y egresos, controla presupuestos y analiza el flujo de caja de cada emprendimiento.
+                </div>
+                <div class="guia-mini-card">
+                    <strong>📋 Nómina</strong>
+                    Gestiona cargos con salarios base y calcula automáticamente pagos mensuales, quincenales y netos.
+                </div>
+                <div class="guia-mini-card">
+                    <strong>🤖 Chatbot</strong>
+                    Disponible en todas las páginas (botón 💬). Hazle preguntas sobre emprendimiento y te ayudará al instante.
+                </div>
+            </div>
+
+            <div class="guia-card" style="margin-top:20px">
+                <div class="guia-card-header">
+                    <div class="guia-card-icon">🚦</div>
+                    <div>
+                        <h2>Primeros pasos</h2>
+                        <span class="guia-tag">Por dónde empezar</span>
+                    </div>
+                </div>
+                <ol class="guia-steps">
+                    <li>Crea una cuenta en la página de <strong>Registro</strong> con tu nombre, correo y contraseña.</li>
+                    <li>Inicia sesión y llegarás al <strong>Dashboard</strong>, tu panel principal.</li>
+                    <li>Crea tu primer <strong>Emprendimiento</strong> con el botón "+ Nuevo emprendimiento".</li>
+                    <li>Dentro del emprendimiento, ve a la pestaña <strong>Trabajadores</strong> para agregar tu equipo.</li>
+                    <li>Usa el módulo de <strong>Finanzas</strong> para registrar ingresos y gastos.</li>
+                    <li>Revisa la <strong>Nómina</strong> para ver el resumen de pagos de todos tus empleados.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- ══════════════════ DASHBOARD ══════════════════ -->
+        <div class="guia-section" id="sec-dashboard">
+            <div class="guia-card">
+                <div class="guia-card-header">
+                    <div class="guia-card-icon">📊</div>
+                    <div>
+                        <h2>El Dashboard</h2>
+                        <span class="guia-tag">Panel principal</span>
+                    </div>
+                </div>
+                <p>El Dashboard es la primera pantalla que ves al iniciar sesión. Es tu <strong>centro de control</strong> donde puedes ver un resumen de todo lo que está pasando en tus emprendimientos.</p>
+
+                <div class="guia-grid">
+                    <div class="guia-mini-card">
+                        <strong>🚀 Contador de emprendimientos</strong>
+                        Muestra cuántos emprendimientos tienes registrados en total.
+                    </div>
+                    <div class="guia-mini-card">
+                        <strong>✅ Activos</strong>
+                        Cuántos de tus emprendimientos tienen estado "activo" actualmente.
+                    </div>
+                    <div class="guia-mini-card">
+                        <strong>📅 Miembro desde</strong>
+                        La fecha en que creaste tu cuenta en SGAPE.
+                    </div>
+                </div>
+
+                <div class="guia-tip" style="margin-top:18px">
+                    💡 <strong>Consejo:</strong> Haz clic en <strong>"💰 Finanzas"</strong> dentro de una tarjeta de emprendimiento para ir directo al módulo de finanzas de ese negocio específico.
+                </div>
+            </div>
+
+            <div class="guia-card">
+                <div class="guia-card-header">
+                    <div class="guia-card-icon">🗂️</div>
+                    <div>
+                        <h2>Tarjetas de emprendimiento</h2>
+                        <span class="guia-tag">Gestión rápida</span>
+                    </div>
+                </div>
+                <p>Cada emprendimiento se muestra como una tarjeta con los siguientes controles:</p>
+                <ol class="guia-steps">
+                    <li><strong>✏️ Editar</strong> — Cambia el nombre, descripción, sector o fecha de inicio.</li>
+                    <li><strong>💰 Finanzas</strong> — Accede al módulo financiero de ese emprendimiento.</li>
+                    <li><strong>👥 Trabajadores</strong> — Ve y gestiona el equipo de ese emprendimiento.</li>
+                    <li><strong>🗑️ Eliminar</strong> — Borra el emprendimiento y todos sus datos (¡cuidado, esta acción es irreversible!).</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- ══════════════════ EMPRENDIMIENTOS ══════════════════ -->
+        <div class="guia-section" id="sec-emprendimientos">
+            <div class="guia-card">
+                <div class="guia-card-header">
+                    <div class="guia-card-icon">🚀</div>
+                    <div>
+                        <h2>Crear un emprendimiento</h2>
+                        <span class="guia-tag">Registro</span>
+                    </div>
+                </div>
+                <p>Para crear un nuevo emprendimiento haz clic en el botón <strong>"+ Nuevo emprendimiento"</strong> en el Dashboard. Se abrirá un formulario con los siguientes campos:</p>
+                <ol class="guia-steps">
+                    <li><strong>Nombre *</strong> — El nombre de tu negocio. Es el único campo obligatorio.</li>
+                    <li><strong>Descripción</strong> — Una breve explicación de a qué se dedica el negocio.</li>
+                    <li><strong>Sector</strong> — La industria a la que pertenece (comercio, servicios, tecnología, alimentos, etc.).</li>
+                    <li><strong>Fecha de inicio</strong> — Cuándo comenzó a operar el emprendimiento.</li>
+                </ol>
+                <div class="guia-tip">
+                    💡 Puedes tener <strong>múltiples emprendimientos</strong> en tu cuenta. Cada uno es completamente independiente con sus propios trabajadores, finanzas y nómina.
+                </div>
+            </div>
+
+            <div class="guia-card">
+                <div class="guia-card-header">
+                    <div class="guia-card-icon">🎨</div>
+                    <div>
+                        <h2>Sectores disponibles</h2>
+                        <span class="guia-tag">Categorías</span>
+                    </div>
+                </div>
+                <div class="guia-grid">
+                    <div class="guia-mini-card">🛒 <strong>Comercio</strong><br/>Tiendas, distribuidoras, ventas al por menor.</div>
+                    <div class="guia-mini-card">🔧 <strong>Servicios</strong><br/>Asesorías, talleres, reparaciones, consultoría.</div>
+                    <div class="guia-mini-card">💻 <strong>Tecnología</strong><br/>Software, apps, soporte técnico, desarrollo web.</div>
+                    <div class="guia-mini-card">🍽️ <strong>Alimentos</strong><br/>Restaurantes, cafeterías, catering, producción de alimentos.</div>
+                    <div class="guia-mini-card">👗 <strong>Moda</strong><br/>Ropa, accesorios, diseño textil, calzado.</div>
+                    <div class="guia-mini-card">❤️ <strong>Salud</strong><br/>Bienestar, fitness, medicina alternativa, farmacia.</div>
+                    <div class="guia-mini-card">📚 <strong>Educación</strong><br/>Academias, tutorías, cursos, capacitaciones.</div>
+                    <div class="guia-mini-card">📦 <strong>Otro</strong><br/>Cualquier negocio que no encaje en las categorías anteriores.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════ TRABAJADORES ══════════════════ -->
+        <div class="guia-section" id="sec-trabajadores">
+            <div class="guia-card">
+                <div class="guia-card-header">
+                    <div class="guia-card-icon">👥</div>
+                    <div>
+                        <h2>Módulo de Trabajadores</h2>
+                        <span class="guia-tag">Gestión de personal</span>
+                    </div>
+                </div>
+                <p>Cada emprendimiento tiene su propio apartado de trabajadores. Para acceder, ve al Dashboard y haz clic en <strong>"👥 Trabajadores"</strong> en la tarjeta del emprendimiento correspondiente.</p>
+                <p>El módulo de trabajadores tiene <strong>dos partes</strong>: primero debes crear los <strong>Cargos</strong>, y luego puedes registrar los <strong>Trabajadores</strong> asignándoles uno de esos cargos.</p>
+            </div>
+
+            <div class="guia-card">
+                <div class="guia-card-header">
+                    <div class="guia-card-icon">⚙️</div>
+                    <div>
+                        <h2>Paso 1: Crear Cargos</h2>
+                        <span class="guia-tag">Obligatorio primero</span>
+                    </div>
+                </div>
+                <p>Un cargo define el <strong>rol y el salario base</strong> de una posición dentro del emprendimiento. Por ejemplo: "Vendedor", "Gerente", "Técnico".</p>
+                <ol class="guia-steps">
+                    <li>Haz clic en <strong>"+ Nuevo cargo"</strong>.</li>
+                    <li>Escribe el <strong>nombre del cargo</strong> (ej: Vendedor).</li>
+                    <li>Ingresa el <strong>salario base mensual</strong> en pesos. El sistema calculará automáticamente el quincenal y el neto.</li>
+                    <li>Opcionalmente agrega una descripción del cargo.</li>
+                    <li>Haz clic en <strong>"Guardar cargo"</strong>.</li>
+                </ol>
+                <div class="formula-box">
+                    <strong>Cálculos automáticos por cargo:</strong><br/>
+                    💵 Salario quincenal = Salario base ÷ 2<br/>
+                    🏥 Descuento salud (4%) = Salario base × 0.04<br/>
+                    🏛️ Descuento pensión (4%) = Salario base × 0.04<br/>
+                    ✅ Salario neto = Salario base × 0.92  (se descuenta el 8%)
+                </div>
+            </div>
+
+            <div class="guia-card">
+                <div class="guia-card-header">
+                    <div class="guia-card-icon">👤</div>
+                    <div>
+                        <h2>Paso 2: Registrar Trabajadores</h2>
+                        <span class="guia-tag">Datos del empleado</span>
+                    </div>
+                </div>
+                <p>Una vez creados los cargos, puedes registrar a tus empleados. Haz clic en <strong>"+ Nuevo trabajador"</strong> y completa el formulario:</p>
+                <ol class="guia-steps">
+                    <li><strong>Nombre *</strong> — Nombre del trabajador.</li>
+                    <li><strong>Apellido *</strong> — Apellido del trabajador.</li>
+                    <li><strong>Edad *</strong> — Edad del trabajador en años.</li>
+                    <li><strong>Cédula</strong> — Número de documento de identidad.</li>
+                    <li><strong>Cargo *</strong> — Selecciona uno de los cargos que creaste previamente.</li>
+                    <li><strong>Fecha de ingreso</strong> — Cuándo empezó a trabajar en el emprendimiento.</li>
+                </ol>
+                <div class="guia-tip">
+                    💡 Al seleccionar el cargo, verás inmediatamente un <strong>resumen del salario</strong> que recibirá ese trabajador (mensual, quincenal y neto tras deducciones).
+                </div>
+            </div>
+
+            <div class="guia-card">
+                <div class="guia-card-header">
+                    <div class="guia-card-icon">🧮</div>
+                    <div>
+                        <h2>Fórmulas de cálculo salarial</h2>
+                        <span class="guia-tag">Cómo se calculan los pagos</span>
+                    </div>
+                </div>
+                <p>El sistema aplica las siguientes fórmulas estándar de nómina colombiana basadas en el salario base mensual asignado al cargo:</p>
+                <div class="formula-box">
+                    <strong>Dado: Salario Base Mensual (SBM) definido en el cargo</strong><br/><br/>
+                    📅 Pago quincenal          = SBM ÷ 2<br/>
+                    🏥 Descuento salud         = SBM × 4%  (aporte empleado)<br/>
+                    🏛️ Descuento pensión       = SBM × 4%  (aporte empleado)<br/>
+                    ➖ Total descuentos        = SBM × 8%<br/>
+                    ✅ Salario neto mensual    = SBM × 92%<br/>
+                    ✅ Salario neto quincenal  = (SBM × 92%) ÷ 2
+                </div>
+                <p>Estos cálculos se muestran automáticamente en la tarjeta de cada trabajador y en el resumen general de nómina.</p>
+                <div class="guia-tip">
+                    💡 Si quieres cambiar el salario de un trabajador, debes editar el <strong>cargo</strong> al que está asignado, o crear un nuevo cargo con el salario actualizado y reasignarlo.
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════ FINANZAS ══════════════════ -->
+        <div class="guia-section" id="sec-finanzas">
+            <div class="guia-card">
+                <div class="guia-card-header">
+                    <div class="guia-card-icon">💰</div>
+                    <div>
+                        <h2>Módulo de Finanzas</h2>
+                        <span class="guia-tag">Control financiero</span>
+                    </div>
+                </div>
+                <p>El módulo de finanzas te permite registrar y analizar todos los <strong>movimientos de dinero</strong> de cada emprendimiento. Para acceder, haz clic en <strong>"💰 Finanzas"</strong> en la tarjeta del emprendimiento en el Dashboard.</p>
+                <p>Puedes registrar dos tipos de transacciones: <strong>Ingresos</strong> (dinero que entra) y <strong>Egresos</strong> (dinero que sale).</p>
+            </div>
+
+            <div class="guia-card">
+                <div class="guia-card-header">
+                    <div class="guia-card-icon">📈</div>
+                    <div>
+                        <h2>Resumen financiero</h2>
+                        <span class="guia-tag">Indicadores</span>
+                    </div>
+                </div>
+                <div class="guia-grid">
+                    <div class="guia-mini-card">
+                        <strong>📈 Total ingresos</strong>
+                        Suma de todos los ingresos registrados en el emprendimiento.
+                    </div>
+                    <div class="guia-mini-card">
+                        <strong>📉 Total egresos</strong>
+                        Suma de todos los gastos y salidas de dinero registrados.
+                    </div>
+                    <div class="guia-mini-card">
+                        <strong>💼 Balance</strong>
+                        Diferencia entre ingresos y egresos. Si es positivo, el negocio genera ganancia.
+                    </div>
+                    <div class="guia-mini-card">
+                        <strong>📊 Transacciones</strong>
+                        Cantidad total de movimientos registrados en el período.
+                    </div>
+                </div>
+            </div>
+
+            <div class="guia-card">
+                <div class="guia-card-header">
+                    <div class="guia-card-icon">➕</div>
+                    <div>
+                        <h2>Registrar una transacción</h2>
+                        <span class="guia-tag">Cómo hacerlo</span>
+                    </div>
+                </div>
+                <ol class="guia-steps">
+                    <li>Selecciona el emprendimiento en el menú desplegable (si no está preseleccionado).</li>
+                    <li>Elige el <strong>tipo</strong>: Ingreso o Egreso.</li>
+                    <li>Selecciona una <strong>categoría</strong> (ventas, servicios, arriendo, marketing, etc.).</li>
+                    <li>Escribe una <strong>descripción</strong> breve de la transacción.</li>
+                    <li>Ingresa el <strong>monto</strong> en pesos.</li>
+                    <li>Selecciona la <strong>fecha</strong> de la transacción.</li>
+                    <li>Haz clic en <strong>"Guardar"</strong>.</li>
+                </ol>
+                <div class="guia-tip">
+                    💡 Categorizar bien tus transacciones te permitirá identificar fácilmente en qué estás gastando más y de dónde viene la mayor parte de tus ingresos.
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════ NÓMINA ══════════════════ -->
+        <div class="guia-section" id="sec-nomina">
+            <div class="guia-card">
+                <div class="guia-card-header">
+                    <div class="guia-card-icon">📋</div>
+                    <div>
+                        <h2>Módulo de Nómina</h2>
+                        <span class="guia-tag">Gestión de salarios</span>
+                    </div>
+                </div>
+                <p>El módulo de Nómina es una <strong>vista consolidada</strong> de todos los cargos y trabajadores de cada emprendimiento. Es diferente al módulo de Trabajadores del Dashboard: aquí puedes ver el <strong>resumen general</strong> de lo que cuesta tu equipo.</p>
+            </div>
+
+            <div class="guia-card">
+                <div class="guia-card-header">
+                    <div class="guia-card-icon">📊</div>
+                    <div>
+                        <h2>Resumen de nómina</h2>
+                        <span class="guia-tag">Indicadores globales</span>
+                    </div>
+                </div>
+                <div class="guia-grid">
+                    <div class="guia-mini-card">
+                        <strong>👥 Trabajadores activos</strong>
+                        Total de empleados activos en el emprendimiento seleccionado.
+                    </div>
+                    <div class="guia-mini-card">
+                        <strong>💵 Nómina mensual</strong>
+                        Suma de los salarios base de todos los trabajadores activos.
+                    </div>
+                    <div class="guia-mini-card">
+                        <strong>📅 Nómina quincenal</strong>
+                        La mitad de la nómina mensual (pago cada 15 días).
+                    </div>
+                    <div class="guia-mini-card">
+                        <strong>📋 Nómina neta</strong>
+                        Total a pagar después de descontar el 8% de salud y pensión.
+                    </div>
+                </div>
+                <div class="formula-box" style="margin-top:16px">
+                    <strong>Fórmula de nómina total:</strong><br/>
+                    Nómina mensual bruta = Σ (Salario base de cada trabajador activo)<br/>
+                    Nómina quincenal     = Nómina mensual ÷ 2<br/>
+                    Nómina neta total    = Nómina mensual × 0.92
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════ FAQ ══════════════════ -->
+        <div class="guia-section" id="sec-faq">
+            <div class="guia-card">
+                <div class="guia-card-header">
+                    <div class="guia-card-icon">❓</div>
+                    <div>
+                        <h2>Preguntas frecuentes</h2>
+                        <span class="guia-tag">FAQ</span>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-q" onclick="toggleFaq(this)">¿Puedo tener más de un emprendimiento? <span>▼</span></div>
+                    <div class="faq-a">Sí. Puedes crear todos los emprendimientos que necesites. Cada uno tiene sus propios trabajadores, finanzas y nómina completamente separados.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-q" onclick="toggleFaq(this)">¿Por qué no puedo crear un trabajador sin cargo? <span>▼</span></div>
+                    <div class="faq-a">El cargo es obligatorio porque define el salario del trabajador. Primero debes crear al menos un cargo en la sección "⚙️ Cargos", y luego podrás asignarlo al trabajador.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-q" onclick="toggleFaq(this)">¿Cómo cambio el salario de un trabajador? <span>▼</span></div>
+                    <div class="faq-a">El salario está definido por el cargo, no por el trabajador individualmente. Para cambiar el salario, edita el cargo correspondiente o crea un nuevo cargo con el salario actualizado y reasigna al trabajador.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-q" onclick="toggleFaq(this)">¿Por qué no puedo eliminar un cargo? <span>▼</span></div>
+                    <div class="faq-a">No puedes eliminar un cargo si tiene trabajadores asignados. Primero elimina o reasigna a todos los trabajadores que tienen ese cargo, y luego podrás eliminarlo.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-q" onclick="toggleFaq(this)">¿Si elimino un emprendimiento pierdo los datos? <span>▼</span></div>
+                    <div class="faq-a">Sí. Eliminar un emprendimiento borrará permanentemente todos sus datos: trabajadores, finanzas, presupuestos y registros de nómina. Esta acción no se puede deshacer.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-q" onclick="toggleFaq(this)">¿Qué significa el descuento del 8% en el salario? <span>▼</span></div>
+                    <div class="faq-a">Corresponde al aporte del empleado al sistema de seguridad social colombiano: 4% para salud y 4% para pensión. El sistema lo descuenta del salario bruto para mostrarte el salario neto que realmente recibe el trabajador.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-q" onclick="toggleFaq(this)">¿El sistema funciona sin internet? <span>▼</span></div>
+                    <div class="faq-a">No. SGAPE necesita que el servidor backend esté corriendo (node server.js) y conexión a ese servidor. Si no puedes iniciar sesión o registrarte, verifica que el servidor esté activo.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-q" onclick="toggleFaq(this)">¿Para qué sirve el chatbot del botón 💬? <span>▼</span></div>
+                    <div class="faq-a">El chatbot es un asistente de inteligencia artificial que responde preguntas sobre emprendimiento: cómo formalizar un negocio, estrategias de marketing, finanzas básicas, y más. Está disponible en todas las páginas del sistema.</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<script>
+    // Logout
+    document.getElementById('btnLogout').addEventListener('click', () => {
+        localStorage.removeItem('sgape_session');
+        localStorage.removeItem('token');
+        localStorage.removeItem('usuario');
+        window.location.href = 'login.html';
+    });
+
+    // Navegación de secciones
+    function mostrarSeccion(id) {
+        document.querySelectorAll('.guia-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.guia-nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('sec-' + id).classList.add('active');
+        event.currentTarget.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // FAQ acordeón
+    function toggleFaq(el) {
+        const answer = el.nextElementSibling;
+        const arrow  = el.querySelector('span');
+        const isOpen = answer.classList.contains('open');
+        document.querySelectorAll('.faq-a').forEach(a => a.classList.remove('open'));
+        document.querySelectorAll('.faq-q span').forEach(a => a.textContent = '▼');
+        if (!isOpen) {
+            answer.classList.add('open');
+            arrow.textContent = '▲';
+        }
+    }
+</script>
+</body>
+</html>
