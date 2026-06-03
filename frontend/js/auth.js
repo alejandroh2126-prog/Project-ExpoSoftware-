@@ -1,19 +1,9 @@
 // ════════════════════════════════════════════
-// SGAPE – Autenticación sin servidor
-// Usa localStorage para persistir usuarios
+// SGAPE – Autenticación
 // ════════════════════════════════════════════
 
 const USUARIOS_KEY = 'sgape_usuarios';
 const SESSION_KEY  = 'sgape_session';
-
-function getUsuarios() {
-    try { return JSON.parse(localStorage.getItem(USUARIOS_KEY)) || []; }
-    catch { return []; }
-}
-
-function saveUsuarios(lista) {
-    localStorage.setItem(USUARIOS_KEY, JSON.stringify(lista));
-}
 
 function getSession() {
     try { return JSON.parse(localStorage.getItem(SESSION_KEY)); }
@@ -22,19 +12,16 @@ function getSession() {
 
 function saveSession(usuario, token) {
     localStorage.setItem(SESSION_KEY, JSON.stringify(usuario));
-    if (token) {
-        localStorage.setItem('token', token);
-    }
+    if (token) localStorage.setItem('token', token);
     localStorage.setItem('usuario', JSON.stringify(usuario));
 }
-
 
 function mostrarError(id, msg) {
     const el = document.getElementById(id);
     if (!el) return;
     el.textContent = msg;
     el.style.display = 'block';
-    setTimeout(() => el.style.display = 'none', 4000);
+    setTimeout(() => el.style.display = 'none', 5000);
 }
 
 function mostrarExito(id, msg) {
@@ -54,6 +41,9 @@ if (btnLogin) {
         if (!email || !password)
             return mostrarError('error-msg', 'Completa todos los campos');
 
+        btnLogin.disabled = true;
+        btnLogin.textContent = 'Iniciando sesión...';
+
         try {
             const res = await fetch('http://localhost:3000/api/auth/login', {
                 method: 'POST',
@@ -61,16 +51,20 @@ if (btnLogin) {
                 body: JSON.stringify({ email, password })
             });
             const data = await res.json();
-            if (!res.ok) {
-                throw new Error(data.error || 'Correo o contraseña incorrectos');
-            }
-            // Guardar datos sesión de respuesta backend (token y usuario)
+            if (!res.ok) throw new Error(data.error || 'Correo o contraseña incorrectos');
+
             localStorage.setItem('token', data.token);
             localStorage.setItem('usuario', JSON.stringify(data.usuario));
             saveSession(data.usuario, data.token);
             window.location.href = 'dashboard.html';
         } catch (e) {
-            mostrarError('error-msg', e.message);
+            if (e.message === 'Failed to fetch') {
+                mostrarError('error-msg', 'No se puede conectar al servidor. Asegúrate de que el backend esté corriendo con: node server.js');
+            } else {
+                mostrarError('error-msg', e.message);
+            }
+            btnLogin.disabled = false;
+            btnLogin.textContent = 'Iniciar sesión';
         }
     });
 
@@ -97,6 +91,9 @@ if (btnRegistro) {
         if (!email.includes('@'))
             return mostrarError('error-msg', 'Ingresa un correo válido');
 
+        btnRegistro.disabled = true;
+        btnRegistro.textContent = 'Creando cuenta...';
+
         try {
             const res = await fetch('http://localhost:3000/api/auth/registro', {
                 method: 'POST',
@@ -104,24 +101,29 @@ if (btnRegistro) {
                 body: JSON.stringify({ nombre, email, password })
             });
             const data = await res.json();
-            if (!res.ok) {
-                throw new Error(data.error || 'No fue posible registrar');
-            }
-            // Guardar datos de sesión/backend
+            if (!res.ok) throw new Error(data.error || 'No fue posible registrar');
+
             localStorage.setItem('token', data.token);
             localStorage.setItem('usuario', JSON.stringify(data.usuario));
             saveSession(data.usuario, data.token);
-            window.location.href = 'dashboard.html';
+
+            mostrarExito('success-msg', '✅ Cuenta creada correctamente. Redirigiendo...');
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
         } catch (e) {
-            mostrarError('error-msg', e.message);
+            if (e.message === 'Failed to fetch') {
+                mostrarError('error-msg', 'No se puede conectar al servidor. Asegúrate de que el backend esté corriendo con: node server.js');
+            } else {
+                mostrarError('error-msg', e.message);
+            }
+            btnRegistro.disabled = false;
+            btnRegistro.textContent = 'Crear cuenta';
         }
     });
 }
 
-
 // ── REDIRIGIR SI YA HAY SESIÓN ───────────────
 if (getSession() &&
     (window.location.pathname.includes('login') ||
-     window.location.pathname.includes('registro'))) {
+        window.location.pathname.includes('registro'))) {
     window.location.href = 'dashboard.html';
 }
