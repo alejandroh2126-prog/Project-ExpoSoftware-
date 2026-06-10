@@ -23,6 +23,20 @@ public class Main {
         emprendimientos.forEach(e -> {
             if (e.getId() >= contadorEmp) contadorEmp = e.getId() + 1;
         });
+
+// Calibrar contadores de cargos y trabajadores para evitar IDs duplicados
+        emprendimientos.forEach(e -> {
+            List<Cargo> cargos = dao.leerCargos(e.getId());
+            cargos.forEach(c -> {
+                if (c.getId() >= contadorCargo) contadorCargo = c.getId() + 1;
+            });
+            List<Trabajador> trabs = dao.leerTrabajadores(e.getId(), cargos);
+            trabs.stream()
+                    .filter(t -> t != null)
+                    .forEach(t -> {
+                        if (t.getId() >= contadorTrab) contadorTrab = t.getId() + 1;
+                    });
+        });
         System.out.println("\n✅ " + emprendimientos.size() + " emprendimiento(s) cargado(s).");
 
         boolean salir = false;
