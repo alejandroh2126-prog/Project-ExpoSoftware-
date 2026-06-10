@@ -1,9 +1,14 @@
 // ════════════════════════════════════════════
 // SGAPE – Autenticación
+// Autor: Alejandro Henríquez Quinchia
+// Universidad Popular del Cesar · 2026
 // ════════════════════════════════════════════
 
 const USUARIOS_KEY = 'sgape_usuarios';
 const SESSION_KEY  = 'sgape_session';
+
+// URL base relativa: funciona en localhost y en cualquier servidor
+const API_BASE = '/api';
 
 function getSession() {
     try { return JSON.parse(localStorage.getItem(SESSION_KEY)); }
@@ -45,7 +50,8 @@ if (btnLogin) {
         btnLogin.textContent = 'Iniciando sesión...';
 
         try {
-            const res = await fetch('http://localhost:3000/api/auth/login', {
+            // URL relativa — ya no depende de localhost:3000
+            const res = await fetch(`${API_BASE}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
@@ -59,7 +65,7 @@ if (btnLogin) {
             window.location.href = 'dashboard.html';
         } catch (e) {
             if (e.message === 'Failed to fetch') {
-                mostrarError('error-msg', 'No se puede conectar al servidor. Asegúrate de que el backend esté corriendo con: node server.js');
+                mostrarError('error-msg', 'No se puede conectar al servidor. Ejecuta: node server.js');
             } else {
                 mostrarError('error-msg', e.message);
             }
@@ -95,7 +101,8 @@ if (btnRegistro) {
         btnRegistro.textContent = 'Creando cuenta...';
 
         try {
-            const res = await fetch('http://localhost:3000/api/auth/registro', {
+            // URL relativa — ya no depende de localhost:3000
+            const res = await fetch(`${API_BASE}/auth/registro`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ nombre, email, password })
@@ -111,7 +118,7 @@ if (btnRegistro) {
             setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
         } catch (e) {
             if (e.message === 'Failed to fetch') {
-                mostrarError('error-msg', 'No se puede conectar al servidor. Asegúrate de que el backend esté corriendo con: node server.js');
+                mostrarError('error-msg', 'No se puede conectar al servidor. Ejecuta: node server.js');
             } else {
                 mostrarError('error-msg', e.message);
             }
