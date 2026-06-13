@@ -1,8 +1,5 @@
-// ════════════════════════════════════════════
-// SGAPE – Nómina sin servidor
-// ════════════════════════════════════════════
-
 const SESSION_KEY = 'sgape_session';
+const API         = 'http://localhost:3000/api';
 
 function getSession() {
     try { return JSON.parse(localStorage.getItem(SESSION_KEY)); }
@@ -10,7 +7,10 @@ function getSession() {
 }
 
 const session = getSession();
-if (!session) window.location.href = 'login.html';
+const token   = localStorage.getItem('token');
+if (!session || !token) window.location.href = 'login.html';
+
+const apiHeaders = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
 
 const btnLogout = document.getElementById('btnLogout');
 if (btnLogout) {
@@ -23,12 +23,8 @@ if (btnLogout) {
 
 const fmt = n => '$' + Number(n || 0).toLocaleString('es-CO');
 
-function getEmprendimientos() {
-    try {
-        return (JSON.parse(localStorage.getItem('sgape_emprendimientos')) || [])
-            .filter(e => e.usuarioId === session.id);
-    } catch { return []; }
-}
+
+
 function getCargos(empId) {
     try { return JSON.parse(localStorage.getItem('sgape_cargos_' + empId)) || []; }
     catch { return []; }
@@ -44,15 +40,19 @@ function saveTrabajadores(empId, lista) {
     localStorage.setItem('sgape_trabajadores_' + empId, JSON.stringify(lista));
 }
 
-function cargarSelector() {
-    const sel  = document.getElementById('selectorEmp');
-    const emps = getEmprendimientos();
-    emps.forEach(e => {
-        const opt = document.createElement('option');
-        opt.value = e.id; opt.textContent = e.nombre; sel.appendChild(opt);
-    });
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('emp')) { sel.value = params.get('emp'); cargarDatos(params.get('emp')); }
+async function cargarSelector() {
+    const sel = document.getElementById('selectorEmp');
+    try {
+        const res  = await fetch(`${API}/emprendimientos`, { headers: apiHeaders });
+        const emps = await res.json();
+        if (!res.ok) throw new Error('Error al cargar emprendimientos');
+        emps.forEach(e => {
+            const opt = document.createElement('option');
+            opt.value = e.id; opt.textContent = e.nombre; sel.appendChild(opt);
+        });
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('emp')) { sel.value = params.get('emp'); cargarDatos(params.get('emp')); }
+    } catch (e) { console.error('Error cargando emprendimientos:', e.message); }
 }
 
 document.getElementById('selectorEmp').addEventListener('change', e => {
